@@ -1,6 +1,5 @@
 use sqlx::{PgPool, Row};
 use std::collections::HashMap;
-//use futures::TryStreamExt;
 use tiberius::Client;
 use tokio::net::TcpStream;
 use tokio_util::compat::{TokioAsyncReadCompatExt};
@@ -54,14 +53,14 @@ impl DatabaseRegistry {
                     Ok(row) => {
                         let value: i32 = row.try_get("result")?;
                         print!("PostgreSQL Connection: '{}'",value);
-                    }
+                    },
                     Err(err) => {
                         print!("Error at execution '{}': query or connection failed: {}",name,err);
                         return Err(Box::new(err));
                     }
                 }
                 Ok(())
-            }
+            },
             Some(DatabaseConnections::SQLServer(client)) => {
                 let rows = client.query("SELECT 1 AS result", &[]).await?.into_first_result().await?;
                 for row in rows {
@@ -69,7 +68,7 @@ impl DatabaseRegistry {
                     print!("Value: '{}'",result)
                 }
                 Ok(())
-            }
+            },
             None => Err(format!("No connector added! '{}'", name).into()),
         }
     }
