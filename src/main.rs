@@ -19,7 +19,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     configuration.database("AdventureWorks2022");
     configuration.trust_cert();
     registry.add_mssql_connection("SQLServerADWorks", configuration).await?;
+
+
     registry.test_connection("SQLServerADWorks").await?;
     registry.test_connection("PostgresSQLDestiny").await?;
+
     Ok(())
 }
