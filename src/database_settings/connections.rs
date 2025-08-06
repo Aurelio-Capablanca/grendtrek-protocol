@@ -92,7 +92,7 @@ impl DatabaseRegistry {
                             .await?;
                         for row in rows {
                             let result: i32 = row.get("result").unwrap();
-                            print!("Value: '{}'", result)
+                            print!("SQL Server Connection: '{}'", result)
                         }
                         Ok(())
                     }

@@ -1,6 +1,7 @@
 use tiberius::AuthMethod;
 use crate::database_settings::connections;
 use crate::database_settings::connections::{DatabaseRegistry, DATABASE_REGISTRY};
+use crate::database_settings::postgresql::postgres_pool;
 
 mod common;
 mod controllers;
@@ -24,6 +25,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     DATABASE_REGISTRY.test_connection("SQLServerADWorks").await?;
     DATABASE_REGISTRY.test_connection("PostgresSQLDestiny").await?;
+
+    postgres_pool::make_a_simple_query(&"PostgresSQLDestiny".to_string()).await?;
 
     Ok(())
 }
