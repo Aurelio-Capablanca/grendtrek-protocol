@@ -12,7 +12,7 @@ pub async fn make_a_simple_query(connection_name: &String)-> Result<(), Box<dyn 
                 println!("table catalog: {}; table schema: {}, table name: {}",table_catalog,table_schema,table_name)
             }
         },
-        DatabaseConnections::SQLServer(client) => {
+        _ => {
             println!("no Actions here! you meeant to use PostgreSQL connection!")
         }
     }
