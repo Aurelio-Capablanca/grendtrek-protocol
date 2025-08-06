@@ -56,7 +56,10 @@ impl DatabaseRegistry {
         Ok(())
     }
 
-
+    pub fn get_connection_pool(&self, name: &str) -> Option<Arc<Mutex<DatabaseConnections>>> {
+        let connections = self.connections.lock().unwrap();
+        connections.get(name).cloned()
+    }
 
     pub async fn test_connection(&self, name: &str) -> Result<(), Box<dyn std::error::Error>> {
         let mut connections = self.connections.lock().unwrap();
