@@ -1,6 +1,7 @@
 use crate::database_settings::connections::{DatabaseConnections, DATABASE_REGISTRY};
+//use crate::models::data_schema::DataSchema;
 
-pub async fn make_a_simple_query(connection_name: &String)-> Result<(), Box<dyn std::error::Error>>{
+pub async fn make_a_simple_query(connection_name: &String) -> Result<(), Box<dyn std::error::Error>>{
     let connection_getter = DATABASE_REGISTRY.get_connection_pool(connection_name).unwrap();
     let mut get = connection_getter.lock().unwrap();
     match &mut *get {
@@ -18,3 +19,6 @@ pub async fn make_a_simple_query(connection_name: &String)-> Result<(), Box<dyn 
     }
     Ok(())
 }
+
+
+//pub async fn 

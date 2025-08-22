@@ -2,15 +2,16 @@ use tiberius::AuthMethod;
 use crate::database_settings::connections;
 use crate::database_settings::connections::{DatabaseRegistry, DATABASE_REGISTRY};
 use crate::database_settings::postgresql::postgres_pool;
+use crate::database_settings::sql_server::sql_server_pool;
 
 mod common;
 mod controllers;
 mod database_settings;
+mod models;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    //let mut registry = DatabaseRegistry::new();
-    
+
     let postgres_url = "postgres://superuserp:jkl555@localhost:5432/transcontinentalshippings";
     DATABASE_REGISTRY.add_postgres_connection("PostgresSQLDestiny", postgres_url).await?;
     
@@ -27,6 +28,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     DATABASE_REGISTRY.test_connection("PostgresSQLDestiny").await?;
 
     postgres_pool::make_a_simple_query(&"PostgresSQLDestiny".to_string()).await?;
+    let schemas = sql_server_pool::get_all_schemas(&"SQLServerADWorks".to_string()).await?;
+    schemas.iter().for_each(|x| println!("{x}"));
 
     Ok(())
 }
