@@ -27,9 +27,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     DATABASE_REGISTRY.test_connection("SQLServerADWorks").await?;
     DATABASE_REGISTRY.test_connection("PostgresSQLDestiny").await?;
 
-    postgres_pool::make_a_simple_query(&"PostgresSQLDestiny".to_string()).await?;
+
+   postgres_pool::make_a_simple_query(&"PostgresSQLDestiny".to_string()).await?;
     let schemas = sql_server_pool::get_all_schemas(&"SQLServerADWorks".to_string()).await?;
     schemas.iter().for_each(|x| println!("{x}"));
 
+    postgres_pool::create_schemas(&"PostgresSQLDestiny".to_string(), schemas).await?;
     Ok(())
 }
