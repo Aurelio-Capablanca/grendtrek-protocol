@@ -1,15 +1,16 @@
 pub struct DataSchema{
-    column_name: String,
-    data_type: String,
-    length_field: i32,
-    description: String,
-    constraint_name: String,
-    constraint_type: String,
-    is_nullable: String,
-    table_name: String,
-    numeric_precision: i32,
-    numeric_scale: i32,
-    schema_name: String
+    column_name: Option<String>,
+    data_type: Option<String>,
+    length_field: Option<i32>,
+    description: Option<String>,
+    constraint_name: Option<String>,
+    constraint_type: Option<String>,
+    is_nullable: Option<String>,
+    table_name: Option<String>,
+    table_schema: Option<String>,
+    numeric_precision: Option<i32>,
+    numeric_scale: Option<i32>,
+    schema_name: Option<String>
 }
 
 //trait DataSchema

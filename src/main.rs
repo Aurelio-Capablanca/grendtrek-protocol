@@ -1,4 +1,5 @@
 use tiberius::AuthMethod;
+use crate::common::grend_trek_error::StopTrek;
 use crate::database_settings::connections;
 use crate::database_settings::connections::{DatabaseRegistry, DATABASE_REGISTRY};
 use crate::database_settings::postgresql::postgres_pool;
@@ -29,9 +30,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 
    postgres_pool::make_a_simple_query(&"PostgresSQLDestiny".to_string()).await?;
-    let schemas = sql_server_pool::get_all_schemas(&"SQLServerADWorks".to_string()).await?;
-    schemas.iter().for_each(|x| println!("{x}"));
+    let schemas = sql_server_pool::get_all_schemas(&"SQLServerADWorks".to_string()).await;
+    let mut list_schemas: Vec<String> = Vec::new();
+    match schemas {
+        Ok(value) => {
+            println!("no error");
+            list_schemas.extend(value);
+        }
+        Err(e) => { 
+            eprintln!("Error Got: {:?}",e)
+        }
+    }
+    list_schemas.iter().for_each(|x| println!("{:?}",x));
 
-    postgres_pool::create_schemas(&"PostgresSQLDestiny".to_string(), schemas).await?;
+    postgres_pool::create_schemas(&"PostgresSQLDestiny".to_string(), list_schemas).await?;
     Ok(())
 }
