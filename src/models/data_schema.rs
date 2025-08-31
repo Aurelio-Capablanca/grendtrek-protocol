@@ -1,4 +1,4 @@
-#[derive(Debug,Default)]
+#[derive(Debug, Default)]
 pub struct DataSchema {
     column_name: Option<String>,
     data_type: Option<String>,
@@ -10,7 +10,7 @@ pub struct DataSchema {
     table_name: Option<String>,
     table_schema: Option<String>,
     numeric_precision: Option<i32>,
-    numeric_scale: Option<i32>
+    numeric_scale: Option<i32>,
 }
 
 impl DataSchema {
@@ -25,7 +25,7 @@ impl DataSchema {
         table_name: Option<String>,
         table_schema: Option<String>,
         numeric_precision: Option<i32>,
-        numeric_scale: Option<i32>
+        numeric_scale: Option<i32>,
     ) -> Self {
         Self {
             column_name,
@@ -40,5 +40,51 @@ impl DataSchema {
             numeric_precision,
             numeric_scale,
         }
+    }
+
+
+    pub fn get_numeric_scale(&self) -> i32{
+        self.numeric_scale.unwrap_or(0)
+    }
+
+    pub fn get_numeric_precision(&self) -> i32{
+        self.numeric_precision.unwrap_or(0)
+    }
+
+    pub fn get_table_schema(&self) -> &str{
+        self.table_schema.as_deref().unwrap_or("")
+    }
+
+    pub fn get_table_name(&self) -> &str {
+        self.table_name.as_deref().unwrap_or("")
+        //self.table_name.unwrap_or("".to_string())
+    }
+
+    pub fn get_is_nullable(&self) -> &str {
+        self.is_nullable.as_deref().unwrap_or("")
+    }
+
+    pub fn get_constraint_type(&self) -> &str {
+        self.constraint_type.as_deref().unwrap_or("")
+    }
+
+    pub fn get_constraint_name(&self) -> &str {
+        self.constraint_name.as_deref().unwrap_or("")
+    }
+
+    pub fn get_description(&self) -> &str {
+        self.description.as_deref().unwrap_or("")
+    }
+
+    pub fn get_length_field(&self) -> i32 {
+        self.length_field.unwrap_or(0)
+    }
+
+    pub fn get_column_name(&self) -> &str {
+        self.column_name.as_deref().unwrap_or("")
+    }
+
+    pub fn get_data_type(&self) -> &str {
+        self.data_type.as_deref().unwrap_or("")
     }
 }
