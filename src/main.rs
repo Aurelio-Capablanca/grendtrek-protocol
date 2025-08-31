@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("no error");
             list_schemas.extend(value);
         }
-        Err(e) => { 
+        Err(e) => {
             eprintln!("Error Got: {:?}",e)
         }
     }
