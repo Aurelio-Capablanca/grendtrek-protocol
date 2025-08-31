@@ -1,7 +1,5 @@
 use tiberius::AuthMethod;
-use crate::common::grend_trek_error::StopTrek;
-use crate::database_settings::connections;
-use crate::database_settings::connections::{DatabaseRegistry, DATABASE_REGISTRY};
+use crate::database_settings::connections::{DATABASE_REGISTRY};
 use crate::database_settings::postgresql::postgres_pool;
 use crate::database_settings::sql_server::sql_server_pool;
 
@@ -43,6 +41,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     list_schemas.iter().for_each(|x| println!("{:?}",x));
 
-    postgres_pool::create_schemas(&"PostgresSQLDestiny".to_string(), list_schemas).await?;
+    postgres_pool::create_schemas(&"PostgresSQLDestiny".to_string(), &list_schemas).await?;
+    let data_schema = sql_server_pool::get_table_info_by_schema(&"SQLServerADWorks".to_string(), &list_schemas).await?;
+    data_schema.iter().for_each(|x| println!("{:?}",x));
+
     Ok(())
 }

@@ -1,3 +1,4 @@
+#[derive(Debug,Default)]
 pub struct DataSchema {
     column_name: Option<String>,
     data_type: Option<String>,
@@ -9,8 +10,7 @@ pub struct DataSchema {
     table_name: Option<String>,
     table_schema: Option<String>,
     numeric_precision: Option<i32>,
-    numeric_scale: Option<i32>,
-    schema_name: Option<String>,
+    numeric_scale: Option<i32>
 }
 
 impl DataSchema {
@@ -25,8 +25,7 @@ impl DataSchema {
         table_name: Option<String>,
         table_schema: Option<String>,
         numeric_precision: Option<i32>,
-        numeric_scale: Option<i32>,
-        schema_name: Option<String>,
+        numeric_scale: Option<i32>
     ) -> Self {
         Self {
             column_name,
@@ -40,7 +39,6 @@ impl DataSchema {
             table_schema,
             numeric_precision,
             numeric_scale,
-            schema_name,
         }
     }
 }

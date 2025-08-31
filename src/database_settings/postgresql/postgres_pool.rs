@@ -31,7 +31,7 @@ pub async fn make_a_simple_query(
 
 pub async fn create_schemas(
     connection_name: &String,
-    schemas: Vec<String>,
+    schemas: &Vec<String>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let connection = DATABASE_REGISTRY
         .get_connection_pool(connection_name)

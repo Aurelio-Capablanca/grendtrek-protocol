@@ -1,5 +1,6 @@
 use crate::common::grend_trek_error::StopTrek;
 use crate::database_settings::connections::{DATABASE_REGISTRY, DatabaseConnections};
+use crate::models::data_schema::DataSchema;
 
 pub async fn get_all_schemas(connection_name: &String) -> Result<Vec<String>, Box<StopTrek>> {
     let connection = DATABASE_REGISTRY
@@ -37,17 +38,19 @@ pub async fn get_all_schemas(connection_name: &String) -> Result<Vec<String>, Bo
 
 pub async fn get_table_info_by_schema(
     connection_name: &String,
-    schema_name: &String,
-) -> Result<(), Box<StopTrek>> {
+    schema_names: &Vec<String>,
+) -> Result<Vec<DataSchema>, Box<StopTrek>> {
     let connection = DATABASE_REGISTRY
         .get_connection_pool(connection_name)
         .unwrap();
     let mut getter = connection.lock().unwrap();
+    let mut data_schema: Vec<DataSchema> = Vec::new();
     match &mut *getter {
         DatabaseConnections::SQLServer(client) => {
-            let query = client
-                .query(
-                    "SELECT
+           for schema_name in schema_names {
+               let query = client
+                   .query(
+                       "SELECT
 	IC.COLUMN_NAME as column_name,
 	IC.Data_TYPE as data_type,
 	IC.CHARACTER_MAXIMUM_LENGTH as length_field,
@@ -84,18 +87,29 @@ WHERE
 	and t.TABLE_TYPE = 'BASE TABLE'
 order by
 	t.TABLE_NAME",
-                    &[schema_name],
-                )
-                .await
-                .map_err(|e| StopTrek::Tiberius(e))?
-                .into_first_result()
-                .await
-                .map_err(|e| StopTrek::Tiberius(e))?;
-            for row in query {
-                let column_name: &str = row.get("column_name").unwrap();
-                let data_type: &str = row.get("data_type").unwrap();
-                let length_field: i32 = row.get("length_field").unwrap();
-            }
+                       &[schema_name],
+                   )
+                   .await
+                   .map_err(|e| StopTrek::Tiberius(e))?
+                   .into_first_result()
+                   .await
+                   .map_err(|e| StopTrek::Tiberius(e))?;
+               for row in query {
+                   let column_name: &str = row.get("column_name").unwrap_or_else(|| "");
+                   let data_type: &str = row.get("data_type").unwrap_or_else(|| "");
+                   let length_field: i32 = row.get("length_field").unwrap_or_else(|| -1);
+                   let description: &str = row.get("ms_description").unwrap_or_else(|| "");
+                   let constraint_name: &str = row.get("constraint_name").unwrap_or_else(|| "");
+                   let constraint_type: &str = row.get("constraint_type").unwrap_or_else(|| "");
+                   let is_nullable: &str = row.get("is_nullable").unwrap_or_else(|| "");
+                   let table_name: &str = row.get("table_name").unwrap_or_else(|| "");
+                   let table_schema: &str = row.get("table_schema").unwrap_or_else(|| "");
+                   let numeric_precision: Option<i32> = row.try_get("numeric_precision").unwrap_or(Some(-1));
+                   let numeric_scale: Option<i32> = row.try_get("numeric_scale").unwrap_or(Some(-1));
+                   data_schema.push(DataSchema::new(Some(column_name.to_string()),Some(data_type.to_string()),Some(length_field),Some(description.to_string()),Some(constraint_name.to_string()),Some(constraint_type.to_string()),Some(is_nullable.to_string()),Some(table_name.to_string()),
+                                                    Some(table_schema.to_string()),numeric_precision,numeric_scale));
+               }
+           }
         }
         _ => {
             println!(
@@ -103,5 +117,5 @@ order by
             )
         }
     }
-    Ok(())
+    Ok(data_schema)
 }
