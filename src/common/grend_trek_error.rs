@@ -1,6 +1,5 @@
 use std::fmt;
 use std::fmt::Formatter;
-use std::io::Error;
 
 #[derive(Debug)]
 pub enum StopTrek {

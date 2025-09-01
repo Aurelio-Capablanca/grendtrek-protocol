@@ -1,6 +1,6 @@
 use tiberius::AuthMethod;
 use crate::database_settings::connections::{DATABASE_REGISTRY};
-use crate::database_settings::postgresql::postgres_pool;
+use crate::database_settings::postgresql::{from_sql_server_to_postgres, postgres_pool};
 use crate::database_settings::sql_server::sql_server_pool;
 
 mod common;
@@ -45,5 +45,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let data_schema = sql_server_pool::get_table_info_by_schema(&"SQLServerADWorks".to_string(), &list_schemas).await?;
     data_schema.iter().for_each(|x| println!("{:?}",x));
 
+    print!("\n");
+    let ddl = from_sql_server_to_postgres::translate_ddl(&data_schema);
+    ddl.iter().for_each(|data| {println!("{:?}",data)});
     Ok(())
 }
