@@ -1,7 +1,6 @@
+use crate::common::grend_trek_error::StopTrek;
 use crate::database_settings::connections::{DATABASE_REGISTRY, DatabaseConnections};
-use axum::http::Response;
 use std::hash::Hash;
-//use crate::models::data_schema::DataSchema;
 
 pub async fn make_a_simple_query(
     connection_name: &String,
@@ -32,14 +31,15 @@ pub async fn make_a_simple_query(
 pub async fn create_schemas(
     connection_name: &String,
     schemas: &Vec<String>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<StopTrek>> {
     let connection = DATABASE_REGISTRY
         .get_connection_pool(connection_name)
         .unwrap();
     let mut getter = connection.lock().unwrap();
+
     match &mut *getter {
         DatabaseConnections::Postgres(pool) => {
-            let mut transaction = pool.begin().await?;
+            let mut transaction = pool.begin().await.map_err(|err| StopTrek::SQLx(err))?;
             let mut success = true;
             for schema in schemas {
                 let mut query = "create schema ".to_string();
@@ -53,12 +53,11 @@ pub async fn create_schemas(
                     }
                 }
                 println!("result : {:?}", results)
-                // pool
             }
             if success {
-                transaction.commit().await?;
+                transaction.commit().await.map_err(|err| StopTrek::SQLx(err))?;
             } else {
-                transaction.rollback().await?;
+                transaction.rollback().await.map_err(|err| StopTrek::SQLx(err))?;
             }
         }
         _ => println!("You're supposed to use a PostgreSQL connection, please retry!!!"),

@@ -56,19 +56,25 @@ fn build_column(fields: &DataSchema) -> String {
     ddl_for_tables.push_str(" ");
     ddl_for_tables.push_str(type_field);
 
-    if fields.get_length_field() != 0 && fields.get_length_field() > 0 {
+    if fields.get_length_field() > 0 {
         ddl_for_tables.push_str("(");
         ddl_for_tables.push_str(&fields.get_length_field().to_string());
         ddl_for_tables.push_str(")")
     }
-    if fields.get_numeric_precision() != 0 && fields.get_numeric_scale() != 0 && PRESCISION_TYPES.contains(&type_field.to_string()){
+    if fields.get_numeric_precision() > 0
+        && fields.get_numeric_scale() > 0
+        && PRESCISION_TYPES.contains(&type_field.to_string())
+    {
         ddl_for_tables.push_str("(");
         ddl_for_tables.push_str(&fields.get_numeric_precision().to_string());
         ddl_for_tables.push_str(",");
         ddl_for_tables.push_str(&fields.get_numeric_scale().to_string());
         ddl_for_tables.push_str(")")
     }
-    if "NO".to_string().eq_ignore_ascii_case(fields.get_is_nullable()) {
+    if "NO"
+        .to_string()
+        .eq_ignore_ascii_case(fields.get_is_nullable())
+    {
         ddl_for_tables.push_str(" NOT NULL")
     }
     ddl_for_tables
@@ -93,16 +99,44 @@ pub fn translate_ddl(structure_table: &Vec<DataSchema>) -> Result<Vec<String>, S
         ddl_tables.push_str("( ");
         let columns = &fields
             .iter()
-            .map(|data| {build_column(data)})
+            .map(|data| build_column(data))
             .collect::<Vec<String>>()
             .join(", ");
-         // let constraints = &fields
-         //     .iter()
-         //     .filter(|x| x.get_constraint_type().len() > 0)
-         //     .filter(|x| !x.get_constraint_type().eq_ignore_ascii_case("FOREIGN KEYS"))
-         //     .collect::<Vec<&DataSchema>>()
-         //     .;
-        ddl_tables.push_str(&columns);
+        let constraint = fields
+            .iter()
+            .filter(|x| x.get_constraint_type().len() > 0)
+            .filter(|x| !x.get_constraint_type().eq_ignore_ascii_case("FOREIGN KEYS"))
+            .collect::<Vec<&&DataSchema>>();
+        let constraints = vec![constraint];
+        let construct_constraint = constraints
+            .iter()
+            .map(|data| {
+                let mut constraint_name: String = String::new();
+                let mut constraint_type: String = String::new();
+                let fields_use = data
+                    .iter()
+                    .map(|x| {
+                        constraint_name = x.get_constraint_name().to_string();
+                        constraint_type = x.get_constraint_type().to_string();
+                        format!("\" {:?} \"", x.get_column_name())
+                    })
+                    .collect::<Vec<String>>()
+                    .join(",");
+                format!(
+                    "CONSTRAINT \"{:?}\" {:?} {:?}",
+                    constraint_name, constraint_type, fields_use
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("");
+        ddl_tables.push_str(columns);
+        if construct_constraint.is_empty() {
+            ddl_tables.push_str("");
+        } else {
+            ddl_tables.push_str(", ");
+            ddl_tables.push_str(&construct_constraint);
+        }
+        ddl_tables.push_str(" );");
         ddl_sentences.push(ddl_tables);
     });
     Ok(ddl_sentences)
