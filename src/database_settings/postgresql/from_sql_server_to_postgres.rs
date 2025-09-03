@@ -56,15 +56,6 @@ fn build_column(fields: &DataSchema) -> String {
     ddl_for_tables.push_str(" ");
     ddl_for_tables.push_str(type_field);
 
-    println!(
-        "name={} len={} precision={} scale={} type={}",
-        fields.get_column_name(),
-        fields.get_length_field(),
-        fields.get_numeric_precision(),
-        fields.get_numeric_scale(),
-        type_field
-    );
-
     if fields.get_length_field() > 0 {
         ddl_for_tables.push_str("(");
         ddl_for_tables.push_str(&fields.get_length_field().to_string());
