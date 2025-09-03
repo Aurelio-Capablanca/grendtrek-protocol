@@ -56,6 +56,15 @@ fn build_column(fields: &DataSchema) -> String {
     ddl_for_tables.push_str(" ");
     ddl_for_tables.push_str(type_field);
 
+    println!(
+        "name={} len={} precision={} scale={} type={}",
+        fields.get_column_name(),
+        fields.get_length_field(),
+        fields.get_numeric_precision(),
+        fields.get_numeric_scale(),
+        type_field
+    );
+
     if fields.get_length_field() > 0 {
         ddl_for_tables.push_str("(");
         ddl_for_tables.push_str(&fields.get_length_field().to_string());
@@ -105,7 +114,7 @@ pub fn translate_ddl(structure_table: &Vec<DataSchema>) -> Result<Vec<String>, S
         let constraint = fields
             .iter()
             .filter(|x| x.get_constraint_type().len() > 0)
-            .filter(|x| !x.get_constraint_type().eq_ignore_ascii_case("FOREIGN KEYS"))
+            .filter(|x| !x.get_constraint_type().eq_ignore_ascii_case("FOREIGN KEY"))
             .collect::<Vec<&&DataSchema>>();
         let constraints = vec![constraint];
         let construct_constraint = constraints

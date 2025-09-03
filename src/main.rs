@@ -47,6 +47,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     print!("\n");
     let ddl = from_sql_server_to_postgres::translate_ddl(&data_schema);
-    ddl.iter().for_each(|data| {println!("{:?}",data)});
+    ddl.iter().for_each(|data| {println!("\n{:?}",data)});
+    match &ddl {
+        Ok(res) => {
+            res.iter().for_each(|data| {println!("\n{:?}",data)});
+        }
+        Err(err) => {
+            print!("Error at : {:?}",err)
+        }
+    }
     Ok(())
 }
