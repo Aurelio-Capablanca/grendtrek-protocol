@@ -92,11 +92,22 @@ pub fn translate_ddl(structure_table: &Vec<DataSchema>) -> Result<Vec<String>, S
     });
     fields_table.iter().for_each(|(table_name, fields)| {
         let mut ddl_tables = String::new();
-        ddl_tables.push_str("create table ");
-        ddl_tables.push_str("\"");
-        ddl_tables.push_str(&table_name);
-        ddl_tables.push_str("\"");
-        ddl_tables.push_str("( ");
+
+        let data_schema_name = fields
+            .iter()
+            .filter(|x| x.get_table_name().eq_ignore_ascii_case(&table_name))
+            .collect::<Vec<&&DataSchema>>();
+        let backup = &&&DataSchema::empty_element();
+        let schema_name = data_schema_name
+            .first()
+            .unwrap_or(backup)
+            .get_table_schema();
+        if schema_name.is_empty() {
+            ddl_tables.push_str(&format!("create table public.\"{}\" ", table_name));
+        } else {
+            ddl_tables.push_str(&format!("create table \"{}\".\"{}\" ", schema_name, table_name));
+        }
+
         let columns = &fields
             .iter()
             .map(|data| build_column(data))

@@ -1,6 +1,6 @@
 use crate::common::grend_trek_error::StopTrek;
 use crate::database_settings::connections::{DATABASE_REGISTRY, DatabaseConnections};
-use std::hash::Hash;
+
 
 pub async fn make_a_simple_query(
     connection_name: &String,

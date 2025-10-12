@@ -42,16 +42,31 @@ impl DataSchema {
         }
     }
 
+    pub fn empty_element() -> Self {
+        Self {
+            column_name: Some("".to_string()),
+            data_type: Some("".to_string()),
+            length_field: Some(0),
+            description: Some("".to_string()),
+            constraint_name: Some("".to_string()),
+            constraint_type: Some("".to_string()),
+            is_nullable: Some("".to_string()),
+            table_name: Some("".to_string()),
+            table_schema: Some("".to_string()),
+            numeric_precision: Some(0),
+            numeric_scale: Some(0),
+        }
+    }
 
-    pub fn get_numeric_scale(&self) -> i32{
+    pub fn get_numeric_scale(&self) -> i32 {
         self.numeric_scale.unwrap_or(0)
     }
 
-    pub fn get_numeric_precision(&self) -> i32{
+    pub fn get_numeric_precision(&self) -> i32 {
         self.numeric_precision.unwrap_or(0)
     }
 
-    pub fn get_table_schema(&self) -> &str{
+    pub fn get_table_schema(&self) -> &str {
         self.table_schema.as_deref().unwrap_or("")
     }
 
@@ -72,7 +87,7 @@ impl DataSchema {
         self.constraint_name.as_deref().unwrap_or("")
     }
 
-    pub fn get_description(&self) -> &str {
+    pub fn _get_description(&self) -> &str {
         self.description.as_deref().unwrap_or("")
     }
 
